@@ -14,7 +14,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'joshualavieri.com',
     year: '2026',
-    description: 'This site — bilingual, static, and open source.',
+    description: 'Digital Workshop for Joshua Lavieri',
     demo: '/',
     source: 'https://github.com/josh1205/joshualavieri.com',
   },
