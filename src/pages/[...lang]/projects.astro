@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import projectsIcon from '../../assets/projects.png'
+import ProjectItem from '@components/ProjectItem.astro'
+import { PROJECTS } from '@data/projects.ts'
+import {
+  localePaths,
+  getLangFromUrl,
+  useTranslations,
+} from '../../i18n/utils'
+
+// One file, every locale.
+export const getStaticPaths = localePaths
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+
+// ProjectItem is a Vue component and can't call t(), so pass the strings in.
+const labels = {
+  article: t('projects.article'),
+  demo: t('projects.demo'),
+  source: t('projects.source'),
+}
+---
+
+<BaseLayout
+  title={t('projects.title')}
+  description={t('projects.description')}
+>
+  <div class="flex items-center gap-3">
+    <Image
+      src={projectsIcon}
+      alt=""
+      width={36}
+      densities={[1, 2]}
+      class="size-9 shrink-0 object-contain"
+      loading="eager"
+    />
+    <h1 class="page-title text-ink-strong">{t('projects.title')}</h1>
+  </div>
+  <p class="mt-3 text-ink-muted">
+    {t('projects.disclaimer')}
+  </p>
+
+  <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {PROJECTS.map((project) => <ProjectItem project={project} labels={labels} />)}
+  </div>
+</BaseLayout>

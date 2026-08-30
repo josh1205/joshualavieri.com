@@ -1,0 +1,284 @@
+---
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { SITE } from '../config.ts'
+import atosLogo from '../assets/atos_logo.jpeg'
+import crunchyrollLogo from '../assets/crunchyroll_logo.jpeg'
+import fauLogo from '../assets/florida_atlantic_university_logo.jpeg'
+
+/* ---------------------------------------------------------------------------
+ * Resume content. Everything below is data — add a job by adding an object,
+ * not by writing markup.
+ *
+ * `intro` and `bullets` are rendered with set:html so they can carry links,
+ * <strong>, and <code>. They're authored here, not user input.
+ * ------------------------------------------------------------------------- */
+
+const NAME = 'Joshua Lavieri'
+const ROLE = 'Infrastructure/Platform Engineer'
+const LOCATION = 'San Francisco Bay Area, CA'
+
+/** Last path segment of a profile URL, e.g. .../in/joshua-lavieri/ -> joshua-lavieri */
+const handle = (url: string) => url.replace(/\/+$/, '').split('/').pop()!
+
+const CONTACT = [
+  { label: 'Email', text: 'joshlavieri@gmail.com', href: 'mailto:joshlavieri@gmail.com' },
+  { label: 'GitHub', text: handle(SITE.links.github), href: SITE.links.github },
+  { label: 'LinkedIn', text: handle(SITE.links.linkedIn), href: SITE.links.linkedIn },
+]
+
+const SUMMARY =
+  'Driven infrastructure and platform engineer with a full-stack background, specializing in multi-cloud environments across AWS GCP and Cloudflare, Kubernetes, and infrastructure as code. I build CI/CD, infrastructure components and observability that eliminate operational toil, cut cloud costs, and let teams ship safely and often. Passionate about automation, reliable platforms, and mentoring the engineers who depend on them.'
+
+interface Role {
+  id: string
+  title: string
+  dates: string
+  intro?: string
+  bullets: string[]
+}
+
+interface Company {
+  id: string
+  name: string
+  url?: string
+  meta?: string
+  /** Square-ish logo from src/assets. Omit to fall back to `logoText`. */
+  logo?: ImageMetadata
+  /** Shown in a dashed tile when there's no logo. */
+  logoText?: string
+  roles: Role[]
+}
+
+const EXPERIENCE: Company[] = [
+  {
+    id: 'crunchyroll',
+    name: 'Crunchyroll',
+    logo: crunchyrollLogo,
+    url: 'https://www.crunchyroll.com',
+    meta: 'San Francisco Bay Area | Hybrid',
+    roles: [
+      {
+        id: 'core-infrastructure',
+        title: 'DevOps, Core Infrastructure Engineer II',
+        dates: 'November 2025 – Present',
+        bullets: [
+          '<strong>Edge and security</strong>: launched Crunchyroll Store 2.0 with the ecommerce team across Cloudflare and AWS, writing WAF and rate-limiting rules that blocks 5M-10M+ requests from scraping bots per day.',
+          '<strong>Platform tooling</strong>: build reusable infrastructure components and CI/CD workflows used company-wide, and support the developers running them across 80+ AWS accounts and hundreds of repositories.',
+          '<strong>Complex migrations</strong>: delivered a multi-region licensing service handling tens of millions of requests, migrating traffic off the legacy system and decommissioning it safely.',
+          '<strong>AI tooling</strong>: maintain an AI DevOps agent on Amazon Bedrock that triages internal support requests and posts recommended fixes to Jira, trained on Jira history, Confluence, and internal best-practice docs.',
+          '<strong>Incident automation</strong>: deployed AWS DevOps Agent across accounts, wired into multiple MCP servers for searching so it resolves issues raised by Datadog monitors or ad-hoc developer chat requests.'        ],
+      },
+    ],
+  },
+  {
+    id: 'atos',
+    name: 'Atos',
+    logo: atosLogo,
+    url: 'https://atos.net',
+    meta: 'Boca Raton, Florida | Hybrid',
+    roles: [
+      {
+        id: 'devops-engineer',
+        title: 'Cloud DevOps Engineer',
+        dates: 'January 2024 – October 2025',
+        intro:
+          'Worked on <a href="https://atos.net/en-us/next-generation-9-1-1">Next Generation 9-1-1</a>.',
+        bullets: [
+          '<strong>Cloud infrastructure</strong>: deployed and managed new and existing NG911 application services in GCP Compute, GKE, and Cloud SQL (Postgres).',
+          '<strong>Automation</strong>: implemented Jenkins to automate service installation, upgrades, and logging/monitoring tasks, significantly reducing manual workload.',
+          '<strong>Cost reduction</strong>: migrated the GKE-based NG911 platform to the Atos Cloud Datacenter using RKE2 (Rancher Kubernetes Engine), significantly reducing resource utilization and cloud provider expenses by <strong>65%</strong>.',
+          '<strong>GitOps</strong>: integrated Argo CD for continuous deployment of on-prem Kubernetes services, reducing script maintenance and advancing a GitOps mindset.',
+          '<strong>Feature delivery</strong>: designed and implemented robust call table features for an NG911 WebRTC application using Angular, TypeScript, and Java, enabling real-time call management and enhancing user experience.',
+        ],
+      },
+      {
+        id: 'software-engineer',
+        title: 'Software Engineer III',
+        dates: 'May 2022 – January 2024',
+        intro:
+          'Worked on <a href="https://www.mitel.com/products/virtual-care-collaboration-service">Virtual Care Collaboration Service</a>, a product now owned by Mitel.',
+        bullets: [
+          '<strong>Frontend development</strong>: implemented frontend features for VCCS, a WebRTC medical consultation platform built on Vue with a Java REST API.',
+          '<strong>SDK ownership</strong>: maintained and enhanced the <code>vcs-realtime-sdk</code> NPM package, a WebRTC telephony plugin enabling more modular and flexible WebRTC business logic.',
+          '<strong>Test tooling</strong>: developed a specialized library and end-to-end tests involving SIP, integrated with WebdriverIO to simplify testing with the SIP protocol.',
+          '<strong>Mentorship</strong>: supervised software QA engineers, managing backlogs and providing code reviews for test automation software.',
+        ],
+      },
+      {
+        id: 'qa-engineer',
+        title: 'Software QA Engineer',
+        dates: 'May 2021 – May 2022',
+        bullets: [
+          '<strong>Test automation</strong>: developed end-to-end test scripts with JavaScript and WebdriverIO for the web app, reducing manual testing by more than <strong>80%</strong>.',
+          '<strong>Mobile testing</strong>: constructed automated test infrastructure for VCCS Android and iOS mobile devices using Appium, reducing manual testing by <strong>100%</strong>.',
+          '<strong>CI/CD</strong>: managed the Jenkins-based end-to-end testing process within CI/CD pipelines.',
+          '<strong>Containerization</strong>: containerized the testing solution with Docker to ensure consistent environments for both local test development and CI/CD execution.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'fau',
+    name: 'Florida Atlantic University',
+    logo: fauLogo,
+    meta: 'Boca Raton, Florida',
+    roles: [
+      {
+        id: 'it',
+        title: 'IT Support Technician',
+        dates: 'January 2021 – May 2021',
+        bullets: [
+          "<strong>Technical Support: </strong>Assisted students, alumni, and faculty with technical issues concerning FAU's website maintenance, internal user accounts, and classroom hardware issues",
+          '<strong>Process</strong>: used TeamDynamix and Microsoft Teams to maintain an organized workflow within the department.',
+          '<strong>Troubleshooting</strong>: produced effective problem-solving strategies for unusual software and user errors.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'affordable-mulching',
+    name: 'Affordable Mulching Co',
+    logoText: 'N/A',
+    meta: 'Bradenton, Florida',
+    roles: [
+      {
+        id: 'owner',
+        title: 'Owner',
+        dates: 'May 2020 – January 2021',
+        bullets: [
+          '<strong>Estimating</strong>: estimated project costs with potential and repeat customers across mulch, rock, dirt, and sand.',
+          '<strong>Team management</strong>: employed and supervised workers on residential and commercial property projects.',
+          '<strong>Sales</strong>: conducted sales in person and over the phone.',
+          '<strong>Client relations</strong>: solved high-pressure situations involving client and new-customer needs.',
+        ],
+      },
+    ],
+  },
+]
+
+const SKILLS = [
+  { label: 'Infrastructure', items: 'AWS, GCP, Cloudflare, Pulumi, Terraform, Kubernetes, Helm, Docker, Ansible' },
+  { label: 'CI/CD', items: 'GitHub Actions, Jenkins, Argo CD' },
+  { label: 'Languages', items: 'TypeScript, JavaScript, Python, Java, PHP, Golang, Bash (you better know this so you can read your claude code thought process 🙃)' },
+  { label: 'Observability', items: 'Datadog, Prometheus, Grafana, AlertManager' },
+  { label: 'Databases', items: 'Postgres, MySQL, Firebase, DynamoDB' },
+  { label: 'Frontend', items: 'Vue, Angular, React, Astro' },
+  { label: 'Backend', items: 'Node.js, Express.js, Laravel' },
+  { label: 'Testing', items: 'Selenium, WebdriverIO, Appium' },
+]
+
+const EDUCATION = [
+  {
+    title: 'Bachelor of Engineering, Computer Science',
+    dates: 'May 2018 – May 2022',
+    school: 'Florida Atlantic University',
+  },
+  {
+    title: 'Minor, Artificial Intelligence',
+    dates: 'May 2022 – May 2023',
+    school: 'Florida Atlantic University',
+  },
+]
+---
+
+<BaseLayout
+  title={NAME}
+  description={`Resume of ${NAME} — Infrastructure and Platform engineer.`}
+  width="narrow"
+>
+  <h1 class="page-title text-ink-strong">{NAME}</h1>
+  <p class="mt-2 text-lg text-ink-muted font-medium">{ROLE}</p>
+
+  <div class="prose prose-resume mt-6">
+    <p>
+      {
+        CONTACT.map((c, i) => (
+          <>
+            {i > 0 && ' | '}
+            <strong>{c.label}</strong>: <a href={c.href}>{c.text}</a>
+          </>
+        ))
+      }
+    </p>
+    <p>{LOCATION}</p>
+
+    <h2>Summary</h2>
+    <p>{SUMMARY}</p>
+
+    <h2>Experience</h2>
+    {
+      EXPERIENCE.map((company) => (
+        <div class="company">
+          {
+            company.logo ? (
+              <Image
+                src={company.logo}
+                alt=""
+                width={40}
+                densities={[1, 2]}
+                class="company-logo"
+                loading="eager"
+              />
+            ) : (
+              <span class="company-logo company-logo-empty" aria-hidden="true">
+                {company.logoText ?? 'N/A'}
+              </span>
+            )
+          }
+
+          {/* Everything sits in this column so it lines up under the name. */}
+          <div class="company-body">
+            <h3 id={company.id}>
+              {company.url ? <a href={company.url}>{company.name}</a> : company.name}
+            </h3>
+            {company.meta && <p class="meta">{company.meta}</p>}
+
+            {/* The rail only appears when several roles share one employer. */}
+            <div class:list={['roles', company.roles.length > 1 && 'roles-timeline']}>
+              {company.roles.map((role) => (
+                <div class="role-block">
+                  <div class="role" id={`${company.id}-${role.id}`}>
+                    <strong>{role.title}</strong>
+                    <span class="role-dates">{role.dates}</span>
+                  </div>
+                  {role.intro && <p set:html={role.intro} />}
+                  <ul>
+                    {role.bullets.map((b) => (
+                      <li set:html={b} />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))
+    }
+
+    <h2>Skills</h2>
+    <ul>
+      {
+        SKILLS.map((s) => (
+          <li>
+            <strong>{s.label}</strong>: {s.items}
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2>Education</h2>
+    {
+      EDUCATION.map((e) => (
+        <>
+          <div class="role">
+            <strong>{e.title}</strong>
+            <span class="role-dates">{e.dates}</span>
+          </div>
+          <p class="meta">{e.school}</p>
+        </>
+      ))
+    }
+  </div>
+</BaseLayout>

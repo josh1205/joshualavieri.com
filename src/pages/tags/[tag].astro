@@ -1,0 +1,53 @@
+---
+import type { GetStaticPaths } from 'astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PostRow from '../../components/PostRow.vue'
+import { getPublishedPosts, getAllTags } from '../../lib/posts.ts'
+import { formatDate } from '../../lib/format.ts'
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const tags = await getAllTags()
+  const posts = await getPublishedPosts()
+
+  return tags.map(({ tag }) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((post) => post.data.tags.includes(tag)),
+    },
+  }))
+}
+
+const { tag, posts } = Astro.props
+---
+
+<BaseLayout
+  title={`Posts tagged "${tag}"`}
+  description={`Everything tagged ${tag}.`}
+>
+  <p class="mono-meta text-ink-muted">
+    <a href="/blog/" class="text-ink-muted no-underline hover:text-accent">
+      ← All posts
+    </a>
+  </p>
+
+  <h1 class="page-title text-ink-strong">#{tag}</h1>
+  <p class="mono-meta mt-1 text-ink-muted">
+    {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+  </p>
+
+  <div class="mt-8 space-y-1">
+    {
+      posts.map((post) => (
+        <PostRow
+          title={post.data.title}
+          href={`/blog/${post.id}/`}
+          date={formatDate(post.data.date)}
+          dateISO={post.data.date.toISOString()}
+          tags={post.data.tags}
+          icon={post.data.icon}
+        />
+      ))
+    }
+  </div>
+</BaseLayout>

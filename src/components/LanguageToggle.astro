@@ -1,0 +1,40 @@
+---
+import Tooltip from './Tooltip.astro'
+import {
+  getLangFromUrl,
+  useTranslations,
+  alternateUrl,
+  isTranslatable,
+} from '../i18n/utils'
+
+/**
+ * Plain link to the same page in the other language — no JavaScript, and the
+ * URL is real, so it's shareable and indexable.
+ */
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const href = alternateUrl(Astro.url, lang)
+const label = t('sidebar.switchLang')
+
+// Pages listed in UNTRANSLATED_PATHS render nothing here.
+const show = isTranslatable(Astro.url)
+---
+
+{
+  show && (
+    <Tooltip label={label} srHidden class="shrink-0">
+      <a
+        href={href}
+        aria-label={label}
+        hreflang={lang === 'en' ? 'af' : 'en'}
+        class="grid size-[34px] place-items-center rounded-full text-ink-muted no-underline transition-colors hover:bg-tag hover:text-ink-strong"
+      >
+        <span
+          class="material-symbols-outlined block leading-none"
+          style="font-size:20px"
+          aria-hidden="true">translate</span
+        >
+      </a>
+    </Tooltip>
+  )
+}

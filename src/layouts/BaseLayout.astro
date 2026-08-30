@@ -1,0 +1,94 @@
+---
+import { SITE } from '../config.ts'
+import { getLangFromUrl } from '../i18n/utils'
+import Footer from '../components/Footer.astro'
+import Sidebar from '../components/Sidebar.astro'
+import '../styles/global.css'
+
+interface Props {
+  title?: string
+  description?: string
+  /** Set on article pages so social cards render as articles. */
+  ogType?: 'website' | 'article'
+  /** 'narrow' caps prose at the 760px measure; listings fill the column. */
+  width?: 'wide' | 'narrow'
+}
+
+const {
+  title,
+  description = SITE.description,
+  ogType = 'website',
+  width = 'wide',
+} = Astro.props
+
+const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title
+const canonical = new URL(Astro.url.pathname, Astro.site)
+const lang = getLangFromUrl(Astro.url)
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href={new URL('rss.xml', Astro.site)}
+    />
+
+    {/*
+      Runs before first paint so the theme is correct with no flash.
+      Must stay inline and un-deferred.
+    */}
+    <script is:inline>
+      ;(() => {
+        try {
+          const stored = localStorage.getItem('theme')
+          const prefersDark = window.matchMedia(
+            '(prefers-color-scheme: dark)'
+          ).matches
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark')
+          }
+        } catch {}
+      })()
+    </script>
+  </head>
+
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-surface-alt focus:px-3 focus:py-2 focus:shadow"
+    >
+      Skip to content
+    </a>
+
+    <div class="layout">
+      <Sidebar />
+      <main id="main" class="layout-main">
+        <div
+          class:list={['content', width === 'narrow' && 'content-narrow']}
+        >
+          <slot />
+          <Footer />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

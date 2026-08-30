@@ -1,0 +1,68 @@
+---
+import Tooltip from './Tooltip.astro'
+import { BRANDS } from '@data/brands.ts'
+
+/**
+ * Icon size in px. A variable rather than a class because it drives both the
+ * SVG box and the ligature font-size, and Tailwind can't generate a class
+ * built from a variable.
+ */
+const ICON_SIZE = 25
+
+interface SocialLink {
+  label: string
+  href: string
+  icon?: string
+  brand?: keyof typeof BRANDS
+  target?: string
+}
+
+interface Props {
+  links: readonly SocialLink[]
+}
+
+
+
+const { links } = Astro.props
+const box = `width:${ICON_SIZE}px;height:${ICON_SIZE}px`
+---
+
+<ul class="flex items-center gap-1">
+  {
+    links.map((link) => (
+      <li>
+        <Tooltip label={link.label} srHidden>
+          <a
+            href={link.href}
+            target={link.target}
+            rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
+            aria-label={link.label}
+            class="grid size-10 place-items-center rounded-md text-ink-muted no-underline transition-colors hover:bg-tag hover:text-ink-strong"
+          >
+            {
+              link.brand ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox={BRANDS[link.brand].viewBox}
+                  fill="currentColor"
+                  style={box}
+                  aria-hidden="true"
+                >
+                  <path d={BRANDS[link.brand].path} />
+                </svg>
+              ) : (
+                <span
+                  class="material-symbols-outlined block leading-none"
+                  style={`font-size:${ICON_SIZE}px`}
+                  aria-hidden="true"
+                >
+                  {link.icon}
+                </span>
+              )
+            }
+          </a>
+        </Tooltip>
+      </li>
+    ))
+  }
+</ul>

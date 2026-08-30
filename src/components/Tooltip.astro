@@ -1,0 +1,62 @@
+---
+/**
+ * Hover/focus tooltip. Wraps whatever you put in the slot.
+ *
+ *   <Tooltip label="Person from South Africa" focusable underline>
+ *     part time afrikaner
+ *   </Tooltip>
+ *
+ * CSS-only — no JavaScript ships for this.
+ */
+interface Props {
+  /** Text shown in the bubble. */
+  label: string
+  /**
+   * Make the wrapper keyboard-focusable. Use for plain text; leave off when
+   * the slot already contains a link or button, or you get two tab stops.
+   */
+  focusable?: boolean
+  /**
+   * Hide the bubble from screen readers. Use when the slot's own element
+   * already carries the same text (e.g. an anchor with aria-label), or it
+   * gets announced twice.
+   */
+  srHidden?: boolean
+  /** Dotted underline hinting there's something to hover. */
+  underline?: boolean
+  class?: string
+}
+
+const {
+  label,
+  focusable = false,
+  srHidden = false,
+  underline = false,
+  class: className,
+} = Astro.props
+---
+
+<span
+  class:list={['group relative inline-flex', className]}
+  tabindex={focusable ? 0 : undefined}
+>
+  <span
+    class:list={[
+      underline &&
+        'underline decoration-dotted decoration-from-font underline-offset-4 decoration-ink-muted',
+    ]}
+  >
+    <slot />
+  </span>
+
+  <span
+    aria-hidden={srHidden ? 'true' : undefined}
+    class="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded-lg bg-surface-alt px-2.5 py-1 text-sm font-semibold whitespace-nowrap text-ink-strong opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 group-focus:opacity-100"
+  >
+    {label}
+    {/* Rotated square peeking out the bottom edge as a pointer. */}
+    <span
+      class="absolute top-full left-1/2 size-2 -translate-x-1/2 -translate-y-1 rotate-45 rounded-[2px] bg-surface-alt"
+    />
+  </span>
+</span>

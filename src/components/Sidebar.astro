@@ -1,0 +1,115 @@
+---
+import { Image } from 'astro:assets'
+import SiteNav from './SiteNav.astro'
+import SocialLinks from './SocialLinks.astro'
+import ThemeToggle from './ThemeToggle.vue'
+import LanguageToggle from './LanguageToggle.astro'
+import Tooltip from './Tooltip.astro'
+import { getLangFromUrl, useTranslations, localeHref } from '../i18n/utils'
+import { SITE } from '../config.ts'
+import logo from '../assets/logo.png'
+// import blogIcon from '../assets/blog.png'
+import projectsIcon from '../assets/projects.png'
+import meIcon from '../assets/me.png'
+
+/**
+ * Logo width in px. Drives BOTH the rendered size and the resolution Astro
+ * generates, so it stays sharp when enlarged.
+ *
+ * Ceiling: the sidebar caps it. Usable width is
+ *   --sidebar-width (370) - padding (2 x 32) - controls (2 x 34) - gaps (2 x 8) = 222px
+ * Past that the logo just fills the row; raise --sidebar-width in
+ * global.css to go bigger.
+ */
+const LOGO_WIDTH = 220
+
+const LOGO_ALT = "Josh's Digital Workshop"
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+
+
+
+const NAV = [
+  { label: t('nav.projects'), href: localeHref('/projects/', lang), image: projectsIcon },
+  // Add once you post your first blog
+  // { label: 'Blog', href: '/blog/', image: blogIcon },
+  { label: t('nav.about'), href: localeHref('/me/', lang), image: meIcon },
+]
+
+const SOCIAL = [
+  { label: 'GitHub', href: SITE.links.github, brand: 'github', target: '_blank' },
+  { label: 'LinkedIn', href: SITE.links.linkedIn, brand: 'linkedIn', target: '_blank' },
+  // Add once you post your first blog
+  // { label: 'RSS', href: '/rss.xml', icon: 'rss_feed' },
+] as const
+
+
+const FOOTER_LINKS = [
+  { label: t('sidebar.resume'), href: '/resume/' },
+  { label: t('sidebar.source'), href: SITE.links.repo },
+]
+
+const currentPath = Astro.url.pathname
+---
+
+<aside class="layout-sidebar">
+  <div class="flex items-center gap-2">
+    <a href={localeHref('/', lang)} class="block min-w-0 no-underline">
+      {/*
+        Black artwork on transparency, so it would disappear against the dark
+        surface — `dark:invert` flips it to cream. width+densities emits 1x/2x
+        only, keeping the 900KB source out of the build.
+      */}
+      <Image
+        src={logo}
+        alt={LOGO_ALT}
+        width={LOGO_WIDTH}
+        densities={[1, 2]}
+        style={`width:${LOGO_WIDTH}px;max-width:100%`}
+        class="dark:invert"
+        loading="eager"
+      />
+    </a>
+
+    {/* The only interactive component — everything else is static HTML. */}
+    <LanguageToggle />
+    <Tooltip label={t('sidebar.theme')} srHidden class="shrink-0">
+      <ThemeToggle client:load />
+    </Tooltip>
+  </div>
+
+  <hr class="my-5 border-edge" />
+
+  <p class="text-[1rem]">
+    <span>{t('sidebar.bioLead')}</span>
+    <a href="/me/">{t('sidebar.bioName')}</a>
+    <span>{t('sidebar.bioRest')}</span>
+  </p>
+
+  <hr class="my-5 border-edge" />
+
+  <SiteNav items={NAV} currentPath={currentPath} />
+
+  <div class="mt-auto pt-10">
+    <SocialLinks links={SOCIAL} />
+
+    <ul class="mono-meta mt-4 flex flex-wrap items-center gap-x-2 text-ink-muted text-sm">
+      {
+        FOOTER_LINKS.map((link, i) => (
+          <>
+            {i > 0 && <li aria-hidden="true" class="opacity-50">|</li>}
+            <li>
+              <a
+                href={link.href}
+                class="text-ink-muted no-underline transition-colors hover:text-accent"
+              >
+                {link.label}
+              </a>
+            </li>
+          </>
+        ))
+      }
+    </ul>
+  </div>
+</aside>

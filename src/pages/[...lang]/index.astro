@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Tooltip from '../../components/Tooltip.astro'
+import ProjectItem from '../../components/ProjectItem.astro'
+import ChipLink from '../../components/ChipLink.astro'
+import Timeline from '../../components/Timeline.vue'
+import { PROJECTS } from '@data/projects.ts'
+import {
+  getLangFromUrl,
+  useTranslations,
+  withLinks,
+  localePaths,
+  localeHref,
+} from '../../i18n/utils'
+import { timeline } from '../../i18n/ui'
+
+// One file, every locale: localePaths() emits / and /af/.
+export const getStaticPaths = localePaths
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const projects = PROJECTS.slice(0, 6)
+
+const projectLabels = {
+  article: t('projects.article'),
+  demo: t('projects.demo'),
+  source: t('projects.source'),
+}
+
+// Swap {{github}} / {{linkedIn}} tokens for the URLs in src/config.ts.
+const entries = timeline[lang].map((e) => ({ ...e, html: withLinks(e.html) }))
+---
+
+<BaseLayout width="narrow">
+  {/* One block, closed by a rule — matching the reference's .hero-index. */}
+  <section class="hero-index">
+    <h1 class="text-ink-strong">{t('home.greeting')}</h1>
+    <p class="text-[1.3rem] text-ink">
+      {t('home.tagline')}
+      <Tooltip label={t('home.afrikanerTip')} focusable underline>
+        {t('home.afrikaner')}
+      </Tooltip>
+    </p>
+
+    <h2 class="subsection-heading mt-8 mb-4">{t('home.timelineHeading')}</h2>
+    <Timeline entries={entries} />
+  </section>
+
+  <section>
+    <div class="mb-2 flex items-center gap-3">
+      <h2 class="section-heading">{t('home.projects')}</h2>
+      <ChipLink href={localeHref('/projects/', lang)}>
+        {t('home.allProjects')}
+      </ChipLink>
+    </div>
+
+    <p class="mb-6 text-ink-muted">{t('home.projectsIntro')}</p>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        projects.map((project) => (
+          <ProjectItem project={project} labels={projectLabels} />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

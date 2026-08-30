@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PostRow from '../../components/PostRow.vue'
+import TagChip from '../../components/TagChip.vue'
+import { getPublishedPosts, getAllTags } from '../../lib/posts.ts'
+import { formatDate } from '../../lib/format.ts'
+
+const posts = await getPublishedPosts()
+const tags = await getAllTags()
+---
+
+<BaseLayout title="Blog" description="Everything I've written.">
+  <h1 class="page-title text-ink-strong">Blog</h1>
+  <p class="mono-meta mt-1 text-ink-muted">{posts.length} posts</p>
+
+  {
+    tags.length > 0 && (
+      <ul class="mt-5 flex flex-wrap gap-1.5">
+        {tags.map(({ tag }) => (
+          <li>
+            <TagChip tag={tag} href={`/tags/${tag}/`} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <div class="mt-8 space-y-1">
+    {
+      posts.map((post) => (
+        <PostRow
+          title={post.data.title}
+          href={`/blog/${post.id}/`}
+          date={formatDate(post.data.date)}
+          dateISO={post.data.date.toISOString()}
+          tags={post.data.tags}
+          icon={post.data.icon}
+        />
+      ))
+    }
+  </div>
+</BaseLayout>

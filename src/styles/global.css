@@ -1,0 +1,662 @@
+@import 'tailwindcss';
+
+/* The reference's three faces: Outfit headings, Sans Flex body, Sans Code mono. */
+@import '@fontsource-variable/outfit';
+@import '@fontsource-variable/google-sans-flex';
+@import '@fontsource-variable/google-sans-code';
+
+/*
+ * Material Symbols (Outlined) — self-hosted subset, regenerate with:
+ *   npm run fonts:icons -- <icon_name> ...
+ * Only the icons listed in scripts/fetch-icon-font.mjs are present; any other
+ * ligature name will render as literal text.
+ */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  /* `block` avoids a flash of the raw ligature text before the font loads. */
+  font-display: block;
+  src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
+}
+
+
+/* Class-based dark mode: the <html> element carries `.dark`. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * ---------------------------------------------------------------------------
+ * Palette
+ * ---------------------------------------------------------------------------
+ * Light mode is warm beige, not white — that warmth is the biggest single
+ * contributor to the reference site's feel. Dark mode is a soft near-black
+ * that leans grey rather than blue.
+ *
+ * Raw ramps stay private. Components use only the semantic --c-* tokens,
+ * which are what flip between themes.
+ */
+:root {
+  --beige-0: #f8f4e6;
+  --beige-1: #f1ead5;
+  --beige-2: #ece4ca;
+  --beige-25: #e5dcbd;
+  --beige-3: #ded4b2;
+  --beige-4: #c6ba93;
+
+  --gray-0: #fbfbfb;
+  --gray-1: #eee;
+  --gray-3: #d4d4d8;
+  --gray-5: #a1a1a8;
+  --gray-55: #5a5a61;
+  --gray-6: #4e4e55;
+  --gray-7: #323239;
+  --gray-8: #28282e;
+  --gray-9: #202025;
+  --gray-10: #1d1d22;
+  --gray-11: #16161a;
+
+  /* Semantic tokens — light */
+  --c-surface: var(--beige-0);
+  --c-surface-alt: var(--beige-1);
+  --c-code: var(--beige-2);
+  --c-card: var(--beige-1);
+  --c-tag: var(--beige-2);
+  --c-tag-hover: var(--beige-25);
+  --c-ink: var(--gray-8);
+  --c-ink-strong: var(--gray-10);
+  --c-ink-muted: var(--gray-55);
+  --c-edge: var(--beige-25);
+  --c-edge-strong: var(--beige-4);
+  --c-marker: var(--gray-7);
+  /* Warm shadow so cards lift off the beige rather than looking grey. */
+  --shadow-card: 0 1px 2px rgba(124, 114, 76, 0.16),
+    0 6px 16px rgba(124, 114, 76, 0.14);
+  --shadow-card-hover: 0 2px 4px rgba(124, 114, 76, 0.2),
+    0 18px 36px rgba(124, 114, 76, 0.26);
+  /* Single accent. Change these two values to reskin links and focus rings. */
+  --c-accent: #2a67a5;
+
+  /*
+   * ---- Tuning knobs -------------------------------------------------------
+   * --layout-max-width : raise it to push the page further LEFT and widen the
+   *                      content column; lower it to pull the page inward.
+   * --base-font-size   : scales all body copy. Headings key off rem, so they
+   *                      scale with it too.
+   * -------------------------------------------------------------------------
+   */
+  --layout-max-width: 1450px;
+  --base-font-size: 18px;
+
+  --sidebar-width: 370px;
+  --content-width: 760px;
+  --layout-padding: 1.5rem;
+  --content-padding-x: 1.5rem;
+
+  --h1: 2rem;
+  --h2: 1.6rem;
+  --h3: 1.4rem;
+  --h4: 1.15rem;
+  --hero-h1: 2.5rem;
+}
+
+@media screen and (min-width: 600px) {
+  :root {
+    --layout-padding: 2rem;
+    --content-padding-x: 5rem;
+    --h1: 2.5rem;
+    --h2: 2rem;
+    --h3: 1.6rem;
+    --h4: 1.25rem;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  :root {
+    --hero-h1: 3rem;
+  }
+}
+
+.dark {
+  --c-surface: var(--gray-9);
+  --c-surface-alt: var(--gray-11);
+  --c-code: var(--gray-10);
+  --c-card: var(--gray-7);
+  --c-tag: var(--gray-8);
+  --c-tag-hover: var(--gray-7);
+  --c-ink: var(--gray-3);
+  --c-ink-strong: var(--gray-0);
+  --c-ink-muted: var(--gray-5);
+  --c-edge: var(--gray-7);
+  --c-edge-strong: var(--gray-6);
+  --c-marker: var(--gray-6);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.45),
+    0 18px 36px rgba(0, 0, 0, 0.5);
+  --c-accent: #6db3f5;
+}
+
+/*
+ * `@theme inline` emits `var(--c-*)` into the utilities rather than resolving
+ * at build time. That's what lets `bg-surface` follow the theme with no
+ * `dark:` variant on the element.
+ */
+@theme inline {
+  --color-surface: var(--c-surface);
+  --color-surface-alt: var(--c-surface-alt);
+  --color-card: var(--c-card);
+  --color-code: var(--c-code);
+  --color-tag: var(--c-tag);
+  --color-tag-hover: var(--c-tag-hover);
+  --color-ink: var(--c-ink);
+  --color-ink-strong: var(--c-ink-strong);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-edge: var(--c-edge);
+  --color-edge-strong: var(--c-edge-strong);
+  --color-accent: var(--c-accent);
+
+  --font-sans:
+    'Google Sans Flex Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Helvetica, Arial, sans-serif;
+  --font-heading:
+    'Outfit Variable', -apple-system, BlinkMacSystemFont, 'DM Sans', Avenir,
+    Helvetica, Arial, sans-serif;
+  --font-mono:
+    'Google Sans Code Variable', Menlo, ui-monospace, SFMono-Regular, Consolas,
+    monospace;
+
+  --container-content: 760px;
+  --container-sidebar: 260px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+    /*
+     * Always reserve the scrollbar gutter. Without this, a short page (home)
+     * has no scrollbar and a long one (resume) does, so the viewport narrows
+     * by the scrollbar width and the centred layout jumps left by half that
+     * on navigation. No-op where the OS uses overlay scrollbars.
+     */
+    scrollbar-gutter: stable;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--c-surface);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    font-size: var(--base-font-size);
+    line-height: 1.6;
+    font-weight: 400;
+    /* Allow synthetic oblique — the body font has no italic face — but
+       still no synthetic bold, since the variable font has real weights. */
+    font-synthesis: style;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    color: var(--c-ink-strong);
+    font-family: var(--font-heading);
+    line-height: 1.3;
+  }
+
+  /*
+   * Links are accent-coloured with a subtle underline, matching the
+   * screenshot. Nav and card links opt out via their own classes.
+   */
+  a {
+    font-weight: 500;
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, var(--c-accent) 35%, transparent);
+    transition:
+      color 0.15s ease,
+      background 0.15s ease,
+      text-decoration-color 0.15s ease;
+  }
+
+  a:hover {
+    text-decoration-color: var(--c-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--c-tag-hover);
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Layout: fixed 260px sidebar + 760px content column, centred together.
+ * ---------------------------------------------------------------------------
+ */
+@layer components {
+  /* In `components` so size utilities can override the 24px default. */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    max-width: var(--layout-max-width);
+    margin-inline: auto;
+  }
+
+  .layout-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    /* The vertical rule separating sidebar from content. */
+    border-right: 1px solid var(--c-edge);
+    padding: var(--layout-padding);
+  }
+
+  .layout-main {
+    min-width: 0;
+    margin-top: 25px;
+  }
+
+  /*
+   * Listings and the homepage fill the main column, left-aligned — the
+   * reference runs ~956px here, not the 760px article measure.
+   */
+  .content {
+    padding: 2rem var(--content-padding-x) 4rem;
+  }
+
+  /* Article prose stays at the readable 760px measure. */
+  .content-narrow {
+    max-width: var(--content-width);
+  }
+
+  /* Below the two-column breakpoint the sidebar stacks on top. */
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .layout-sidebar {
+      position: static;
+      height: auto;
+      overflow: visible;
+      border-right: 0;
+      border-bottom: 1px solid var(--c-edge);
+    }
+  }
+
+  /*
+   * Homepage intro. The reference wraps h1, subtitle, timeline and the
+   * closing line in one block with a rule underneath.
+   */
+  .hero-index {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--c-edge);
+  }
+
+  .hero-index h1 {
+    font-size: var(--hero-h1);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Blog, tags, projects, about, search. */
+  /* Blog, tags, projects, about, search. */
+  .page-title {
+    font-size: var(--h1);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .section-heading {
+    font-size: var(--h2);
+    font-weight: 700;
+  }
+
+  .subsection-heading {
+    font-size: var(--h4);
+    font-weight: 700;
+  }
+
+  /* Monospace metadata: dates, tags, timeline ranges. */
+  .mono-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+   * Resume variant. Doubled `.prose.prose-resume` so these beat the article
+   * `.prose` rules regardless of source order — at equal specificity the
+   * later rule wins, and these are emitted first.
+   */
+  .prose.prose-resume {
+    font-size: 1rem;
+  }
+
+  /* Article prose breathes at 1.25rem; a resume should not. */
+  .prose.prose-resume > * + * {
+    margin-top: 0.7rem;
+  }
+
+  .prose.prose-resume h2 {
+    display: block;
+    margin-top: 2.5rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--c-edge);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-ink-muted);
+  }
+
+  /* Cancels the rule-to-the-right from the earlier pass. */
+  .prose.prose-resume h2::after {
+    content: none;
+  }
+
+  /* Breathing room when arriving from a #fragment link. */
+  .prose.prose-resume h3,
+  .prose.prose-resume .role {
+    scroll-margin-top: 2rem;
+  }
+
+  .prose.prose-resume h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+
+  .prose.prose-resume ul {
+    margin-top: 0.55rem;
+    padding-left: 1.15rem;
+  }
+
+  .prose.prose-resume ul > li + li {
+    margin-top: 0.3rem;
+  }
+
+  /* Logo in a left gutter, everything else aligned in the column beside it. */
+  .company {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    margin-top: 1.75rem;
+  }
+
+  .company-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .company-body > .roles {
+    margin-top: 0.5rem;
+  }
+
+  .role-block + .role-block {
+    margin-top: 0.9rem;
+  }
+
+  /*
+   * Multi-role employers get a LinkedIn-style rail: a dot beside each title
+   * with a line segment running down to the next one. Segmented per role
+   * rather than one continuous line, so there's a visible break at each dot.
+   */
+  .roles-timeline {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+
+  .roles-timeline .role-block {
+    position: relative;
+  }
+
+  /* 8px dot, centred on the 2px rail below it. */
+  .roles-timeline .role-block::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0.25rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--c-ink-muted) 45%, transparent);
+  }
+
+  /* Line segment: starts below this dot, stops short of the next one. */
+  .roles-timeline .role-block::after {
+    content: '';
+    position: absolute;
+    left: calc(-1.5rem + 3px);
+    top: 1.3rem;
+    bottom: -0.35rem;
+    width: 2px;
+    border-radius: 1px;
+    background: color-mix(in srgb, var(--c-ink-muted) 30%, transparent);
+  }
+
+  /* Nothing to connect to after the final role. */
+  .roles-timeline .role-block:last-child::after {
+    content: none;
+  }
+
+  .company-body > p {
+    margin-top: 0.5rem;
+  }
+
+  .company-logo {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    object-fit: contain;
+    background: var(--c-surface-alt);
+  }
+
+  /* Stand-in for a company with no logo. */
+  .company-logo-empty {
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--c-edge-strong);
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--c-ink-muted);
+  }
+
+  /* Title on the left, dates hard right — the line that makes it read as a
+     resume rather than a blog post. */
+  .role {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: 0.3rem;
+  }
+
+  .role-dates {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--c-ink-muted);
+    white-space: nowrap;
+  }
+
+  /* Location line under the company name. */
+  .meta {
+    margin-top: 0.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--c-ink-muted);
+  }
+
+  /*
+   * Article body
+   */
+  .prose {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .prose > * + * {
+    margin-top: 1.25rem;
+  }
+
+  .prose h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-size: var(--h2);
+    font-weight: 700;
+  }
+
+  .prose h3 {
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+    font-size: var(--h3);
+    font-weight: 600;
+  }
+
+  .prose h4 {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-size: var(--h4);
+    font-weight: 600;
+  }
+
+  .prose ul {
+    @apply list-disc space-y-2 pl-6;
+  }
+
+  .prose ol {
+    @apply list-decimal space-y-2 pl-6;
+  }
+
+  .prose li::marker {
+    color: var(--c-marker);
+  }
+
+  .prose blockquote {
+    background-color: var(--c-surface-alt);
+    border-left: 3px solid var(--c-accent);
+    border-radius: 0 8px 8px 0;
+    padding: 0.75rem 1.25rem;
+    color: var(--c-ink-muted);
+  }
+
+  .prose img {
+    border-radius: 8px;
+  }
+
+  .prose hr {
+    margin-block: 2.5rem;
+    border-color: var(--c-edge);
+  }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid var(--c-edge);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  .prose th {
+    background-color: var(--c-surface-alt);
+    font-weight: 600;
+  }
+
+  /* Inline code only — fenced blocks are Shiki's, handled below. */
+  .prose :not(pre) > code {
+    background-color: var(--c-code);
+    border-radius: 4px;
+    padding: 0.15em 0.4em;
+    font-size: 0.875em;
+    font-family: var(--font-mono);
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+}
+
+/*
+ * Shiki dual-theme swap. Shiki writes both palettes onto every token as CSS
+ * variables; this decides which is painted. The background is overridden so
+ * code blocks sit on the beige/charcoal surface instead of Shiki's own white.
+ */
+.astro-code {
+  background-color: var(--c-code) !important;
+}
+
+.dark .astro-code,
+.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Pagefind ships unstyled; bind it to the palette. */
+:root {
+  --pagefind-ui-scale: 0.85;
+  --pagefind-ui-primary: var(--c-ink-strong);
+  --pagefind-ui-text: var(--c-ink);
+  --pagefind-ui-background: var(--c-surface);
+  --pagefind-ui-border: var(--c-edge);
+  --pagefind-ui-tag: var(--c-tag);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-font: var(--font-sans);
+}

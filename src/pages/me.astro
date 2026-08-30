@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import Tooltip from '@components/Tooltip.astro'
+import meIcon from '@assets/me.png'
+import { localePaths } from '@i18n/utils'
+import { SITE } from '@src/config.ts'
+
+// One file, every locale.
+export const getStaticPaths = localePaths
+---
+
+<BaseLayout width="narrow" title="About me" description="Who I am and what I work on.">
+  <div class="flex items-center gap-3">
+    <Image
+      src={meIcon}
+      alt=""
+      width={36}
+      densities={[1, 2]}
+      class="size-9 shrink-0 object-contain"
+      loading="eager"
+    />
+    <h1 class="page-title text-ink-strong">About me</h1>
+  </div>
+
+  <div class="prose mt-6">
+    <p>
+      Hi, I'm Josh! Welcome to my digital workshop where I tinker on projects
+      and begin my journey of leaving a mark on the software community. I love
+      all aspects of the engineering lifecycle from QA, security, software and
+      of course platform engineering. I am currently working at <a href="https://www.crunchyroll.com">Crunchyroll</a> as a
+      Core Infrastructure engineer where I build reusable infrastructure
+      components, CI/CD workflows and provide support to the beloved engineering
+      teams so they can bring their services to life. This could mean I'm spending
+      my day debugging network issues in aws, IaC drift headaches, deploying new
+      services, deprecating old ones or building some cool automation or
+      internal service so that I can make someone else's headache a process they enjoy.
+    </p>
+
+    <p>
+      I created this site because as I get further into my career I want a place
+      to record the projects I have created and the problems I solve along the
+      way, as well as transcribe my thoughts and opinions so I have a history to
+      look back on as they change and I get better as an engineer. I'm not sure
+      who may read them in the day of AI, but maybe they'll provide some benefit to
+      another engineer querying an AI CLI tool on how to solve a similar issue. (cmon that had to get a laugh)
+    </p>
+
+    <p>
+      I spend a lot of time on personal projects and attempting to teach myself
+      Afrikaans, <Tooltip label="I get better every day" focusable underline
+        ><em>ek word elke dag beter</em></Tooltip
+      >, but when I am not doing
+      either of those I am enjoying a good workout, watching F1, playing video games, reading
+      the Bible or spending time with my wife and dog Maple who only wants to
+      play fetch inside the house!
+    </p>
+
+    <h2>Contact</h2>
+
+    <p>Dont be shy, I'd love to chat about anything software related, your struggles or insights with learning a second language or if you just want to connect! </p>
+
+    <ul>
+      <li>
+        <strong>Email</strong>:{' '}
+        <a href={`mailto:${SITE.links.email}`}>{SITE.links.email}</a>
+      </li>
+      <li><a href={SITE.links.github}>GitHub</a></li>
+      <li><a href={SITE.links.linkedIn}>LinkedIn</a></li>
+    </ul>
+
+    <h2>What I'm doing now</h2>
+
+    <ul>
+      <li>Working full time.</li>
+      <li>Playing around with my personal website.</li>
+      <li>
+        Iterating on <a href="https://lawademy.com">Lawademy</a> as we keep
+        building out outlines for law students.
+      </li>
+      <li>Starting my blogging journey.</li>
+      <li>Forgetting my Afrikaans SVO grammar structure.</li>
+      <li>Attempting to keep up with the AI craze.</li>
+    </ul>
+
+    <h2>Faith</h2>
+
+    <p>Currently reading through:</p>
+
+    <p>
+      <strong
+        ><a href="https://www.bibleref.com/Judges/1/Judges-chapter-1.html"
+          >Judges</a
+        ></strong
+      > — the Israelites are fully committed to the goldfish memory bit, and not
+      in a good way.
+    </p>
+
+    <h2>Learning Afrikaans</h2>
+
+    <p>
+      I'm teaching myself Afrikaans. These are the resources doing the heavy
+      lifting, roughly in the order I reach for them:
+    </p>
+
+    <ul>
+      <li>
+        <a href="https://app.talkpal.ai/">TalkPal</a> — interactive audio and
+        speech practice. The closest thing to a conversation partner on demand.
+      </li>
+      <li>
+        <a
+          href="https://theswissbay.ch/pdf/Books/Linguistics/Mega%20linguistics%20pack/Indo-European/Germanic/Afrikaans%2C%20Teach%20Yourself%20%28McDermott%29.pdf"
+          >Teach Yourself Afrikaans</a
+        > (McDermott) — vocabulary, grammar, and reading.
+      </li>
+      <li>
+        <a href="https://library.teachyourself.com/">Teach Yourself library</a> —
+        audio courses to listen along with.
+      </li>
+      <li>
+        <a href="https://open.spotify.com/show/5cnUg6FSfG3fdjfzA86m8c">KLETS</a>
+        — an Afrikaans podcast, for real-world listening at real-world speed.
+      </li>
+    </ul>
+
+    <p>
+      And if you don't have someone in your life to speak it with, get a tutor
+      from the country. Nothing replaces an actual conversation.
+    </p>
+
+    <h2>Miscellaneous</h2>
+
+    <p>If you're after the short version, here's my <a href="/resume/">resume</a>.</p>
+  </div>
+
+</BaseLayout>

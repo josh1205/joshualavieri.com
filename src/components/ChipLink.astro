@@ -1,0 +1,34 @@
+---
+/**
+ * Bordered pill link. Two sizes:
+ *   chip  — small monospace label, e.g. "All Projects" beside a heading
+ *   badge — roomier, with space for an icon, e.g. the footer's tech links
+ */
+interface Props {
+  href: string
+  variant?: 'chip' | 'badge'
+  /** Opens in a new tab, with the rel attributes that should accompany it. */
+  external?: boolean
+  class?: string
+}
+
+const { href, variant = 'chip', external = false, class: className } = Astro.props
+
+const base =
+  'border border-edge bg-surface-alt no-underline transition-colors hover:border-edge-strong'
+
+const variants = {
+  chip: 'mono-meta rounded-md px-2.5 py-1 text-ink hover:text-ink-strong',
+  badge:
+    'flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-ink-strong',
+}
+---
+
+<a
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  class:list={[base, variants[variant], className]}
+>
+  <slot />
+</a>

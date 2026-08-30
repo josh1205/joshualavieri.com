@@ -1,0 +1,66 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import BaseLayout from './BaseLayout.astro'
+import TagChip from '../components/TagChip.vue'
+import Comments from '../components/Comments.astro'
+import { formatDateFull } from '../lib/format.ts'
+
+interface Props {
+  post: CollectionEntry<'blog'>
+}
+
+const { post } = Astro.props
+const { title, description, date, updated, tags, icon } = post.data
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  width="narrow"
+>
+  <article>
+    <header class="mb-8">
+      <p class="mono-meta text-ink-muted">
+        <a href="/blog/" class="text-ink-muted no-underline hover:text-accent">
+          ← All posts
+        </a>
+      </p>
+
+      <h1 class="page-title text-ink-strong">
+        <span aria-hidden="true">{icon}</span>{' '}{title}
+      </h1>
+
+      <div class="mono-meta mt-2 flex flex-wrap items-center gap-x-2 text-ink-muted">
+        <time datetime={date.toISOString()}>{formatDateFull(date)}</time>
+        {
+          updated && (
+            <>
+              <span aria-hidden="true" class="opacity-50">·</span>
+              <span>updated {formatDateFull(updated)}</span>
+            </>
+          )
+        }
+      </div>
+
+      {
+        tags.length > 0 && (
+          <ul class="mt-3 flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <li>
+                <TagChip tag={tag} href={`/tags/${tag}/`} />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    {/* Pagefind indexes only what's inside this attribute. */}
+    <div class="prose" data-pagefind-body>
+      <slot />
+    </div>
+  </article>
+
+  <Comments />
+</BaseLayout>

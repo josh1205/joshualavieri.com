@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets'
+import astroIcon from '../assets/astro-icon.png'
+import { BRANDS } from '@data/brands.ts'
+import { SITE } from '../config.ts'
+import { getLangFromUrl, useTranslations } from '../i18n/utils'
+import ChipLink from './ChipLink.astro'
+
+/** The stack this site runs on, plus where the source lives. */
+const BADGES = [
+  { label: 'GitHub', href: SITE.links.repo, brand: 'github' as const },
+  { label: 'Cloudflare', href: 'https://www.cloudflare.com', brand: 'cloudflare' as const },
+  { label: 'AWS', href: 'https://aws.amazon.com', brand: 'aws' as const },
+]
+
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const year = new Date().getFullYear()
+---
+
+<footer class="mt-16 border-t border-edge pt-8 pb-4">
+  <ul class="flex flex-wrap items-center gap-2">
+    <li>
+      <ChipLink href="https://astro.build" variant="badge" external>
+        <Image
+          src={astroIcon}
+          alt=""
+          width={18}
+          densities={[1, 2]}
+          class="size-4.5 shrink-0 object-contain"
+        />
+        Astro
+      </ChipLink>
+    </li>
+
+    {
+      BADGES.map((badge) => (
+        <li>
+          <ChipLink href={badge.href} variant="badge" external>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox={BRANDS[badge.brand].viewBox}
+              fill={BRANDS[badge.brand].color ?? 'currentColor'}
+              class="size-4.5 shrink-0"
+              aria-hidden="true"
+            >
+              <path d={BRANDS[badge.brand].path} />
+            </svg>
+            {badge.label}
+          </ChipLink>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="mono-meta mt-5 text-ink-muted">
+    &copy; {year} {SITE.author}. {t('footer.builtWith')}
+  </p>
+
+  <p class="mono-meta mt-1 text-ink-muted">
+    {t('footer.designCredit')} <a href="https://tania.dev">tania.dev</a>.
+  </p>
+</footer>

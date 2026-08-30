@@ -1,0 +1,45 @@
+---
+import { GISCUS } from '../config.ts'
+
+// Giscus stores comments as GitHub Discussions — no database, no auth of
+// your own, and it stays a static site. Readers sign in with GitHub.
+const configured = GISCUS.repo !== '' && GISCUS.repoId !== ''
+---
+
+<section class="mt-14 border-t border-edge pt-8">
+ <h2 class="mb-6 text-lg font-semibold">Comments</h2>
+
+  {
+    configured ? (
+ <div class="giscus" />
+    ) : (
+ <p class="rounded-lg border border-dashed border-edge p-4 text-sm text-ink-muted">
+        Comments aren't configured yet. Enable Discussions on a public GitHub
+ repo, run through <a class="underline" href="https://giscus.app">giscus.app</a>,
+        and paste the four values into <code>GISCUS</code> in <code>src/config.ts</code>.
+      </p>
+    )
+  }
+</section>
+
+{
+  configured && (
+    <script
+      is:inline
+      src="https://giscus.app/client.js"
+      data-repo={GISCUS.repo}
+      data-repo-id={GISCUS.repoId}
+      data-category={GISCUS.category}
+      data-category-id={GISCUS.categoryId}
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="en"
+      crossorigin="anonymous"
+      async
+    />
+  )
+}

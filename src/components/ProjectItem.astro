@@ -1,0 +1,100 @@
+---
+import type { Project } from '@data/projects.ts'
+
+interface Props {
+  project: Project
+  /** Translated link labels, resolved by the page. */
+  labels: { article: string; demo: string; source: string }
+}
+
+const { project, labels } = Astro.props
+
+// The title links to the most useful destination that exists.
+const titleHref = project.demo ?? project.source
+
+const links = [
+  { label: labels.article, href: project.article, target: "_blank" },
+  { label: labels.demo, href: project.demo, target: "_blank" },
+  { label: labels.source, href: project.source, target: "_blank" },
+].filter((l) => l.href)
+---
+
+<article class="project-card flex flex-col rounded-xl border border-edge-strong bg-card p-5">
+  <p class="mono-meta text-ink-muted">{project.year}</p>
+
+  <h2 class="mt-1 text-[1.15rem] font-bold">
+    {
+      titleHref ? (
+        <a href={titleHref} target="_blank" class="font-bold no-underline hover:underline">
+          {project.name}
+        </a>
+      ) : (
+        <span class="text-ink-strong">{project.name}</span>
+      )
+    }
+  </h2>
+
+  <p class="mt-2.5 text-[1rem] text-ink">{project.description}</p>
+
+  {
+    links.length > 0 && (
+      <div class="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[1rem]">
+        {links.map((l) => (
+          <a href={l.href} target={l.target}>{l.label}</a>
+        ))}
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .project-card {
+    /* Rotation and lift are driven by the script below via custom properties,
+       so the resting state is a plain no-op transform. */
+    transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+      translateY(var(--ty, 0px));
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 120ms ease-out,
+      box-shadow 200ms ease;
+    will-change: transform;
+  }
+
+  .project-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Keep the shadow, drop the motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .project-card {
+      transform: none !important;
+      transition: box-shadow 200ms ease;
+    }
+  }
+</style>
+
+<script>
+  // Tilt each card toward the cursor. Astro bundles this once for the page,
+  // not once per card.
+  const MAX_TILT = 6 // degrees
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  if (!reduced) {
+    for (const card of document.querySelectorAll<HTMLElement>('.project-card')) {
+      card.addEventListener('pointermove', (event) => {
+        const box = card.getBoundingClientRect()
+        const x = (event.clientX - box.left) / box.width - 0.5
+        const y = (event.clientY - box.top) / box.height - 0.5
+        card.style.setProperty('--ry', `${x * MAX_TILT}deg`)
+        card.style.setProperty('--rx', `${-y * MAX_TILT}deg`)
+        card.style.setProperty('--ty', '-4px')
+      })
+
+      card.addEventListener('pointerleave', () => {
+        card.style.setProperty('--rx', '0deg')
+        card.style.setProperty('--ry', '0deg')
+        card.style.setProperty('--ty', '0px')
+      })
+    }
+  }
+</script>

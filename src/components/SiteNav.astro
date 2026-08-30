@@ -1,0 +1,83 @@
+---
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+
+const ICON_SIZE = 25
+
+interface NavItem {
+  label: string
+  href: string
+  /** Material Symbols ligature, used when no image is given. */
+  icon?: string
+  /** A PNG/SVG imported from src/assets. Takes precedence over `icon`. */
+  image?: ImageMetadata
+}
+
+interface Props {
+  items: NavItem[]
+  currentPath: string
+}
+
+const { items, currentPath } = Astro.props
+
+/**
+ * Compare with a trailing slash on both sides. Astro serves `/me` and `/me/`
+ * as the same page without redirecting, so a link written either way must
+ * still light up the matching nav item.
+ */
+const withSlash = (path: string) => (path.endsWith('/') ? path : `${path}/`)
+
+function isActive(href: string) {
+  const current = withSlash(currentPath)
+  const target = withSlash(href)
+  return target === '/' ? current === '/' : current.startsWith(target)
+}
+
+const iconBox = `width:${ICON_SIZE}px;height:${ICON_SIZE}px`
+---
+
+<nav aria-label="Main">
+  <ul class="space-y-0.5">
+    {
+      items.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            class:list={[
+              'flex items-center gap-2.5 rounded-md px-2 py-1.5 no-underline transition-colors hover:bg-tag',
+              isActive(item.href)
+                ? 'bg-tag font-semibold text-ink-strong'
+                : 'font-medium text-ink',
+            ]}
+          >
+            {
+              item.image ? (
+                /* object-contain keeps every icon in the same box whatever
+                   its aspect ratio. densities keeps it sharp on retina. */
+                <Image
+                  src={item.image}
+                  alt=""
+                  width={ICON_SIZE}
+                  densities={[1, 2]}
+                  style={iconBox}
+                  class="shrink-0 object-contain"
+                  loading="eager"
+                />
+              ) : (
+                <span
+                  class="material-symbols-outlined leading-none"
+                  style={`font-size:${ICON_SIZE}px`}
+                  aria-hidden="true"
+                >
+                  {item.icon}
+                </span>
+              )
+            }
+            <span class="text-[1rem]">{item.label}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
