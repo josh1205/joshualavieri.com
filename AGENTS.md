@@ -31,7 +31,7 @@ starting.**
 
 | Skill | Read it when |
 |---|---|
-| [`digital-workshop`](.agents/skills/digital-workshop/SKILL.md) | Editing any page, component, or stylesheet — architecture, i18n, design tokens, component boundaries |
+| [`joshualavieri-com`](.agents/skills/joshualavieri-com/SKILL.md) | Editing any page, component, or stylesheet — architecture, i18n, design tokens, component boundaries |
 | [`verify-ui-change`](.agents/skills/verify-ui-change/SKILL.md) | A change affects layout, spacing, colour, or typography |
 | [`astro-silent-failures`](.agents/skills/astro-silent-failures/SKILL.md) | An edit appears to do nothing — every entry is a failure with no error message |
 | [`prepare-image-asset`](.agents/skills/prepare-image-asset/SKILL.md) | Adding a logo, icon, or photo to `src/assets/` |

@@ -20,7 +20,7 @@ export const SITE = {
 // Until `repo` is filled in, the comments block renders a setup hint
 // instead of the widget.
 export const GISCUS = {
-  repo: '',            // e.g. 'joshualavieri/digital-workshop-comments'
+  repo: '',            // e.g. 'joshualavieri/joshualavieri.com-comments'
   repoId: '',
   category: 'Announcements',
   categoryId: '',

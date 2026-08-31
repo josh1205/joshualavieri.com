@@ -12,7 +12,7 @@ coordinates from them produces confident wrong answers. Render it and measure.
 ## Render the page
 
 ```bash
-cd /Users/joshualavieri/software/digital-workshop
+cd /Users/joshualavieri/software/joshualavieri.com
 export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 24 >/dev/null
 npm run build && npm run preview > /tmp/pv.log 2>&1 &
 PID=$!

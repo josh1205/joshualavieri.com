@@ -1,5 +1,5 @@
 ---
-name: digital-workshop
+name: joshualavieri-com
 description: Architecture and conventions for this Astro personal site — routing, i18n, design tokens, component boundaries, and where things live. Read before editing any page, component, or stylesheet in this repo.
 ---
 

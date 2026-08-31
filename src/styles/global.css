@@ -282,9 +282,14 @@
     align-self: start;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
+    /*
+     * min-height rather than height + overflow: a scroll container clips its
+     * children in BOTH axes, which cut off tooltips escaping the sidebar.
+     * No z-index can beat an ancestor's overflow clip. With min-height the
+     * element grows instead, so nothing is ever hidden.
+     */
+    min-height: 100vh;
+    overflow: visible;
     /* The vertical rule separating sidebar from content. */
     border-right: 1px solid var(--c-edge);
     padding: var(--layout-padding);

@@ -10,31 +10,43 @@ import {
 /**
  * Plain link to the same page in the other language — no JavaScript, and the
  * URL is real, so it's shareable and indexable.
+ *
+ * On pages listed in UNTRANSLATED_PATHS the control stays visible but inert,
+ * so the sidebar doesn't reflow between pages and the reason is discoverable.
  */
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
-const href = alternateUrl(Astro.url, lang)
-const label = t('sidebar.switchLang')
+const enabled = isTranslatable(Astro.url)
 
-// Pages listed in UNTRANSLATED_PATHS render nothing here.
-const show = isTranslatable(Astro.url)
+const label = enabled ? t('sidebar.switchLang') : t('sidebar.notTranslated')
+
+// A capitalised variable renders as a dynamic tag: <a> when it links
+// anywhere, <span> when there's nothing to link to.
+const Tag = enabled ? 'a' : 'span'
 ---
 
-{
-  show && (
-    <Tooltip label={label} srHidden class="shrink-0">
-      <a
-        href={href}
-        aria-label={label}
-        hreflang={lang === 'en' ? 'af' : 'en'}
-        class="grid size-[34px] place-items-center rounded-full text-ink-muted no-underline transition-colors hover:bg-tag hover:text-ink-strong"
-      >
-        <span
-          class="material-symbols-outlined block leading-none"
-          style="font-size:20px"
-          aria-hidden="true">translate</span
-        >
-      </a>
-    </Tooltip>
-  )
-}
+<Tooltip
+  label={label}
+  class="shrink-0"
+  srHidden={enabled}
+  focusable={!enabled}
+>
+  <Tag
+    href={enabled ? alternateUrl(Astro.url, lang) : undefined}
+    hreflang={enabled ? (lang === 'en' ? 'af' : 'en') : undefined}
+    aria-label={enabled ? label : undefined}
+    aria-disabled={enabled ? undefined : 'true'}
+    class:list={[
+      'grid size-8.5 place-items-center rounded-full text-ink-muted transition-colors',
+      enabled
+        ? 'no-underline hover:bg-tag hover:text-ink-strong'
+        : 'cursor-not-allowed opacity-40',
+    ]}
+  >
+    <span
+      class="material-symbols-outlined block leading-none"
+      style="font-size:20px"
+      aria-hidden="true">translate</span
+    >
+  </Tag>
+</Tooltip>
