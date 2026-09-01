@@ -19,6 +19,12 @@ export const PROJECTS: Project[] = [
     source: 'https://github.com/josh1205/joshualavieri.com',
   },
   {
+    name: 'joshualavieri-cloudflare-infra',
+    year: '2026',
+    description: 'Cloudflare config for joshualavieri.com in Pulumi',
+    source: 'https://github.com/josh1205/joshualavieri-cloudflare-infra',
+  },
+  {
     name: 'Lawademy',
     year: '2024',
     description: 'Law school outline library',

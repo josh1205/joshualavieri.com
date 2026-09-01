@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets'
 import astroIcon from '../assets/astro-icon.png'
+import pulumiIcon from '../assets/pulumi-icon.png'
 import { BRANDS } from '@data/brands.ts'
 import { SITE } from '../config.ts'
 import { getLangFromUrl, useTranslations } from '../i18n/utils'
@@ -50,6 +51,19 @@ const year = new Date().getFullYear()
         </li>
       ))
     }
+
+    <li>
+      <ChipLink href="https://www.pulumi.com" variant="badge" external>
+        <Image
+          src={pulumiIcon}
+          alt=""
+          width={18}
+          densities={[1, 2]}
+          class="size-4.5 shrink-0 object-contain"
+        />
+        Pulumi
+      </ChipLink>
+    </li>
   </ul>
 
   <p class="mono-meta mt-5 text-ink-muted">
@@ -57,6 +71,6 @@ const year = new Date().getFullYear()
   </p>
 
   <p class="mono-meta mt-1 text-ink-muted">
-    {t('footer.designCredit')} <a href="https://tania.dev">tania.dev</a>.
+    {t('footer.designCredit')} <a href="https://tania.dev" target="_blank">tania.dev</a>.
   </p>
 </footer>
