@@ -1,0 +1,19 @@
+# Joshua Lavieri
+
+> Personal site of Joshua Lavieri, an infrastructure and platform engineer.
+> Projects, writing, and a resume. Built with Astro, hosted on Cloudflare Pages.
+> English at /, Afrikaans at /af/.
+
+## Pages
+
+- [Home](https://joshualavieri.com/): Introduction and a brief career timeline.
+- [Projects](https://joshualavieri.com/projects/): Projects built and in progress, with demo and source links.
+- [About me](https://joshualavieri.com/me/): Longer personal background.
+- [Resume](https://joshualavieri.com/resume/): Work history, roles, and technologies.
+- [Blog](https://joshualavieri.com/blog/): Posts, tag-filterable.
+
+## Optional
+
+- [RSS feed](https://joshualavieri.com/rss.xml)
+- [Sitemap](https://joshualavieri.com/sitemap-index.xml)
+- [Source](https://github.com/josh1205/joshualavieri.com)
