@@ -16,9 +16,38 @@ const BADGES = [
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
 const year = new Date().getFullYear()
+
+/**
+ * Mirrors the pair at the bottom of the sidebar. The sidebar hides its copy
+ * once the layout stacks, so these are the only ones on small viewports.
+ */
+const SMALL_LINKS = [
+  { label: t('sidebar.resume'), href: '/resume/' },
+  { label: t('sidebar.source'), href: SITE.links.repo },
+]
 ---
 
 <footer class="mt-16 border-t border-edge pt-8 pb-4">
+  {/* `display` comes from .footer-small-links, which only shows below the
+      stacking breakpoint — hence no `flex` utility here. */}
+  <ul class="footer-small-links mono-meta mb-6 flex-wrap items-center gap-x-2 text-ink-muted">
+    {
+      SMALL_LINKS.map((link, i) => (
+        <>
+          {i > 0 && <li aria-hidden="true" class="opacity-50">|</li>}
+          <li>
+            <a
+              href={link.href}
+              class="text-ink-muted no-underline transition-colors hover:text-accent"
+            >
+              {link.label}
+            </a>
+          </li>
+        </>
+      ))
+    }
+  </ul>
+
   <ul class="flex flex-wrap items-center gap-2">
     <li>
       <ChipLink href="https://astro.build" variant="badge" external>

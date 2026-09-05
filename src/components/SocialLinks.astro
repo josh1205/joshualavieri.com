@@ -19,11 +19,16 @@ interface SocialLink {
 
 interface Props {
   links: readonly SocialLink[]
+  /** Smaller hit area, sized to match the theme/language toggles in the
+      stacked-layout bar. */
+  compact?: boolean
 }
 
 
 
-const { links } = Astro.props
+const { links, compact = false } = Astro.props
+// Compact icons are sized by .bar-control in global.css, so that the bar can
+// scale them per breakpoint — an inline width would beat any rule there.
 const box = `width:${ICON_SIZE}px;height:${ICON_SIZE}px`
 ---
 
@@ -37,7 +42,11 @@ const box = `width:${ICON_SIZE}px;height:${ICON_SIZE}px`
             target={link.target}
             rel={link.target === '_blank' ? 'noopener noreferrer' : undefined}
             aria-label={link.label}
-            class="grid size-10 place-items-center rounded-md text-ink-muted no-underline transition-colors hover:bg-tag hover:text-ink-strong"
+            class:list={[
+              'text-ink-muted no-underline transition-colors hover:bg-tag hover:text-ink-strong',
+              !compact && 'grid place-items-center',
+              compact ? 'bar-control' : 'size-10 rounded-md',
+            ]}
           >
             {
               link.brand ? (
@@ -45,7 +54,7 @@ const box = `width:${ICON_SIZE}px;height:${ICON_SIZE}px`
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox={BRANDS[link.brand].viewBox}
                   fill="currentColor"
-                  style={box}
+                  style={compact ? undefined : box}
                   aria-hidden="true"
                 >
                   <path d={BRANDS[link.brand].path} />
@@ -53,7 +62,7 @@ const box = `width:${ICON_SIZE}px;height:${ICON_SIZE}px`
               ) : (
                 <span
                   class="material-symbols-outlined block leading-none"
-                  style={`font-size:${ICON_SIZE}px`}
+                  style={compact ? undefined : `font-size:${ICON_SIZE}px`}
                   aria-hidden="true"
                 >
                   {link.icon}

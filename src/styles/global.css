@@ -40,11 +40,9 @@
   --beige-1: #f1ead5;
   --beige-2: #ece4ca;
   --beige-25: #e5dcbd;
-  --beige-3: #ded4b2;
   --beige-4: #c6ba93;
 
   --gray-0: #fbfbfb;
-  --gray-1: #eee;
   --gray-3: #d4d4d8;
   --gray-5: #a1a1a8;
   --gray-55: #5a5a61;
@@ -88,6 +86,12 @@
   --base-font-size: 18px;
 
   --sidebar-width: 370px;
+  /* Round icon buttons in the sidebar's top bar: hit area and glyph. */
+  --bar-control-size: 2.125rem;
+  --bar-icon-size: 20px;
+  /* Nav links: icon box and label. Both grow in the stacked menu. */
+  --nav-icon-size: 25px;
+  --nav-label-size: 1rem;
   --content-width: 760px;
   --layout-padding: 1.5rem;
   --content-padding-x: 1.5rem;
@@ -113,6 +117,18 @@
 @media screen and (min-width: 800px) {
   :root {
     --hero-h1: 3rem;
+  }
+}
+
+/* Stacked layout: the bar is the only navigation, so its targets grow. */
+@media screen and (max-width: 900px) {
+  :root {
+    --bar-control-size: 2.5rem;
+    --bar-icon-size: 24px;
+    --nav-icon-size: 30px;
+    --nav-label-size: 1.2rem;
+    /* Space between the bar row and the rule under it, in both menu states. */
+    --bar-padding: 0.85rem;
   }
 }
 
@@ -144,7 +160,6 @@
   --color-surface: var(--c-surface);
   --color-surface-alt: var(--c-surface-alt);
   --color-card: var(--c-card);
-  --color-code: var(--c-code);
   --color-tag: var(--c-tag);
   --color-tag-hover: var(--c-tag-hover);
   --color-ink: var(--c-ink);
@@ -163,9 +178,6 @@
   --font-mono:
     'Google Sans Code Variable', Menlo, ui-monospace, SFMono-Regular, Consolas,
     monospace;
-
-  --container-content: 760px;
-  --container-sidebar: 260px;
 }
 
 @layer base {
@@ -274,6 +286,7 @@
     grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
     max-width: var(--layout-max-width);
     margin-inline: auto;
+    min-height: 100vh;
   }
 
   .layout-sidebar {
@@ -298,6 +311,117 @@
   .layout-main {
     min-width: 0;
     margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*
+   * Logo size comes from the custom properties the component sets inline, so
+   * the stacked layout can shrink it. `height: auto` matters: the <img> still
+   * carries Astro's intrinsic height attribute, which would stretch it.
+   */
+  .sidebar-logo img {
+    width: var(--logo-width);
+    max-width: 100%;
+    height: auto;
+  }
+
+  /*
+   * Nav link parts, sized by variable rather than by utility or an inline
+   * style so the stacked menu can scale them up.
+   */
+  .nav-icon {
+    width: var(--nav-icon-size);
+    height: var(--nav-icon-size);
+  }
+
+  .material-symbols-outlined.nav-icon {
+    font-size: var(--nav-icon-size);
+  }
+
+  .nav-label {
+    font-size: var(--nav-label-size);
+  }
+
+  /*
+   * Every round control in the top bar. A class rather than size utilities so
+   * the breakpoint can scale them — a `size-*` utility would win over this.
+   */
+  .bar-control {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: var(--bar-control-size);
+    height: var(--bar-control-size);
+    border-radius: 9999px;
+  }
+
+  .bar-control .material-symbols-outlined {
+    font-size: var(--bar-icon-size);
+  }
+
+  .bar-control svg {
+    width: var(--bar-icon-size);
+    height: var(--bar-icon-size);
+  }
+
+  /*
+   * Bar-only controls. Both are hidden until the layout stacks — no `display`
+   * utility on either element, or the utilities layer would win. Ordered after
+   * .bar-control so this `display` wins the specificity tie.
+   */
+  .sidebar-bar-social,
+  .sidebar-nav-toggle {
+    display: none;
+  }
+
+  /* Three bars that fold into an X, in place of an icon-font glyph. */
+  .hamburger {
+    position: relative;
+    display: block;
+    width: calc(var(--bar-icon-size) * 0.9);
+    height: calc(var(--bar-icon-size) * 0.6);
+  }
+
+  .hamburger > span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .hamburger > span:nth-child(1) {
+    top: 0;
+  }
+
+  .hamburger > span:nth-child(2) {
+    top: calc(50% - 1px);
+  }
+
+  .hamburger > span:nth-child(3) {
+    top: calc(100% - 2px);
+  }
+
+  [data-nav-open] .hamburger > span:nth-child(1) {
+    transform: translateY(calc(var(--bar-icon-size) * 0.3 - 1px)) rotate(45deg);
+  }
+
+  [data-nav-open] .hamburger > span:nth-child(2) {
+    opacity: 0;
+  }
+
+  [data-nav-open] .hamburger > span:nth-child(3) {
+    transform: translateY(calc(var(--bar-icon-size) * -0.3 + 1px)) rotate(-45deg);
+  }
+
+  /* Shown only while stacked; on desktop the sidebar carries these links. */
+  .footer-small-links {
+    display: none;
   }
 
   /*
@@ -306,6 +430,18 @@
    */
   .content {
     padding: 2rem var(--content-padding-x) 4rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /*
+   * Absorbs the leftover height above the footer. The growth lives here rather
+   * than on `margin-top: auto` on the footer itself, so the footer keeps its
+   * own top margin on pages that do fill the viewport.
+   */
+  .content-body {
+    flex: 1;
   }
 
   /* Article prose stays at the readable 760px measure. */
@@ -317,14 +453,114 @@
   @media (max-width: 900px) {
     .layout {
       grid-template-columns: minmax(0, 1fr);
+      /* Stacked: the sidebar takes what it needs, main gets the rest. */
+      grid-template-rows: auto 1fr;
     }
 
     .layout-sidebar {
       position: static;
       height: auto;
+      min-height: 0;
       overflow: visible;
       border-right: 0;
       border-bottom: 1px solid var(--c-edge);
+      /* A bar, not a column: trim the vertical padding to match. */
+      padding-block: var(--bar-padding);
+    }
+
+    /* Everything but the logo sits hard right. */
+    .sidebar-bar-actions {
+      margin-left: auto;
+    }
+
+    .sidebar-logo img {
+      width: var(--logo-width-mobile);
+    }
+
+    .sidebar-bar-social {
+      display: block;
+    }
+
+    /*
+     * No tooltips at this width. Nothing hovers on a touch screen, and the
+     * bubble is absolutely positioned with `nowrap`: whatever hangs past the
+     * right edge counts toward the document's scroll width, which gave the
+     * page a horizontal scroll and pushed the bar's controls off screen. Every
+     * control it wraps carries its own aria-label.
+     */
+    .tooltip-bubble {
+      display: none;
+    }
+
+    .sidebar-nav-toggle {
+      display: grid;
+    }
+
+    /* The bio belongs to the sidebar proper, not to the menu. */
+    .sidebar-bio {
+      display: none;
+    }
+
+    /* Nav links collapse behind the menu button. */
+    .sidebar-panel {
+      display: none;
+    }
+
+    /*
+     * Open: the whole sidebar becomes a full-screen sheet. The bar stays put
+     * at the top of it — same row, same X — and the links sit centred below.
+     */
+    .layout-sidebar[data-nav-open] {
+      position: fixed;
+      inset: 0;
+      /*
+       * Undoes the `align-self: start` the sticky desktop column needs. Self
+       * alignment applies to positioned boxes too, and `start` sizes this one
+       * to its content instead of stretching between top: 0 and bottom: 0 —
+       * leaving the page showing below a sheet only as tall as its links.
+       */
+      align-self: stretch;
+      z-index: 50;
+      background: var(--c-surface);
+      border-bottom: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .layout-sidebar[data-nav-open] .sidebar-panel {
+      display: block;
+      /*
+       * Full-bleed rule under the bar, out past the sidebar's own padding.
+       * Open, this border stands in for the sidebar's border-bottom, so it
+       * needs the same gap under the bar row or the line jumps up on click.
+       */
+      margin-block-start: var(--bar-padding);
+      margin-inline: calc(var(--layout-padding) * -1);
+      padding: 3rem var(--layout-padding) 0;
+      border-top: 1px solid var(--c-edge);
+    }
+
+    .sidebar-panel nav a {
+      justify-content: center;
+    }
+
+    /* Vertical rhythm goes on the li: the ul's own spacing is a utility and
+       would win over anything set here. */
+    .sidebar-panel nav li {
+      padding-block: 0.6rem;
+    }
+
+    html.nav-open {
+      overflow: hidden;
+    }
+
+    /* Its social row is in the bar and its links are in the page footer. */
+    .sidebar-foot {
+      display: none;
+    }
+
+    .footer-small-links {
+      display: flex;
     }
   }
 
@@ -345,7 +581,6 @@
     margin-bottom: 0.5rem;
   }
 
-  /* Blog, tags, projects, about, search. */
   /* Blog, tags, projects, about, search. */
   .page-title {
     font-size: var(--h1);
@@ -396,11 +631,6 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-ink-muted);
-  }
-
-  /* Cancels the rule-to-the-right from the earlier pass. */
-  .prose.prose-resume h2::after {
-    content: none;
   }
 
   /* Breathing room when arriving from a #fragment link. */
@@ -651,17 +881,4 @@
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
   text-decoration: var(--shiki-dark-text-decoration) !important;
-}
-
-/* Pagefind ships unstyled; bind it to the palette. */
-:root {
-  --pagefind-ui-scale: 0.85;
-  --pagefind-ui-primary: var(--c-ink-strong);
-  --pagefind-ui-text: var(--c-ink);
-  --pagefind-ui-background: var(--c-surface);
-  --pagefind-ui-border: var(--c-edge);
-  --pagefind-ui-tag: var(--c-tag);
-  --pagefind-ui-border-width: 1px;
-  --pagefind-ui-border-radius: 8px;
-  --pagefind-ui-font: var(--font-sans);
 }

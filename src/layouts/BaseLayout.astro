@@ -35,6 +35,16 @@ const lang = getLangFromUrl(Astro.url)
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
+    <!-- The icon font uses font-display:block (see global.css) so ligature text
+         never flashes. Preloading shortens the invisible window that costs. -->
+    <link
+      rel="preload"
+      href="/fonts/material-symbols-outlined.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -85,7 +95,9 @@ const lang = getLangFromUrl(Astro.url)
         <div
           class:list={['content', width === 'narrow' && 'content-narrow']}
         >
-          <slot />
+          <div class="content-body">
+            <slot />
+          </div>
           <Footer />
         </div>
       </main>

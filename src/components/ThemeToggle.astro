@@ -1,0 +1,49 @@
+---
+/**
+ * Was a Vue island with `client:load`, which pulled the Vue runtime (~25KB)
+ * plus the Astro client runtime onto every page for a single button — three
+ * chained requests on the critical path. Plain markup and a few lines of
+ * vanilla JS do the same job with no framework runtime.
+ *
+ * The inline script in BaseLayout sets the `dark` class before paint; this
+ * only syncs the button's label and icon to whatever that decided.
+ */
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  class="bar-control text-ink-muted transition-colors hover:bg-tag hover:text-ink-strong"
+  aria-label="Switch to dark theme"
+  aria-pressed="false"
+>
+  <!-- Material Symbols ligatures; the font is a self-hosted subset. -->
+  <span class="material-symbols-outlined block leading-none" aria-hidden="true"
+    >dark_mode</span
+  >
+</button>
+
+<script>
+  const root = document.documentElement
+
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    const icon = btn.querySelector('span')
+    if (!icon) continue
+
+    const sync = (dark: boolean) => {
+      btn.setAttribute('aria-pressed', String(dark))
+      btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme')
+      icon.textContent = dark ? 'light_mode' : 'dark_mode'
+    }
+
+    sync(root.classList.contains('dark'))
+
+    btn.addEventListener('click', () => {
+      const dark = root.classList.toggle('dark')
+      try {
+        localStorage.setItem('theme', dark ? 'dark' : 'light')
+      } catch {}
+      sync(dark)
+    })
+  }
+</script>

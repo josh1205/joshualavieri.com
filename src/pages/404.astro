@@ -1,0 +1,29 @@
+---
+// Cloudflare Pages serves this file with a real 404 status for any path that
+// doesn't match a built page. Without it, Pages falls back to index.html with a
+// 200 — a "soft 404" that gets mistyped URLs indexed as copies of the homepage.
+//
+// Not locale-routed: one static file answers every unmatched path, including
+// /af/ ones, so there is no URL to read a locale from.
+import BaseLayout from '@layouts/BaseLayout.astro'
+---
+
+<BaseLayout
+  width="narrow"
+  title="Page not found"
+  description="That page doesn't exist."
+>
+  <h1 class="page-title text-ink-strong">Page not found</h1>
+
+  <p class="mt-4 text-[1.1rem] text-ink">
+    That link doesn't lead anywhere, it may have moved, or never existed.
+  </p>
+
+  <ul class="mt-6 space-y-1 text-[1rem]">
+    <li><a href="/">Home</a></li>
+    <li><a href="/projects/">Projects</a></li>
+    <li><a href="/blog/">Blog</a></li>
+    <li><a href="/me/">About me</a></li>
+    <li><a href="/resume/">Resume</a></li>
+  </ul>
+</BaseLayout>

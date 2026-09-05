@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets'
 import SiteNav from './SiteNav.astro'
 import SocialLinks from './SocialLinks.astro'
-import ThemeToggle from './ThemeToggle.vue'
+import ThemeToggle from './ThemeToggle.astro'
 import LanguageToggle from './LanguageToggle.astro'
 import Tooltip from './Tooltip.astro'
 import { getLangFromUrl, useTranslations, localeHref } from '../i18n/utils'
@@ -22,6 +22,12 @@ import meIcon from '../assets/me.png'
  * global.css to go bigger.
  */
 const LOGO_WIDTH = 220
+
+/**
+ * Logo width once the layout stacks. The sidebar becomes a single bar there,
+ * shared with the toggles, the social icons and the menu button.
+ */
+const LOGO_WIDTH_MOBILE = 180
 
 const LOGO_ALT = "Josh's Digital Workshop"
 
@@ -45,6 +51,9 @@ const SOCIAL = [
 ] as const
 
 
+/** The bar has room for one social icon; the rest stay in the sidebar foot. */
+const BAR_SOCIAL = SOCIAL.filter((link) => link.brand === 'linkedIn')
+
 const FOOTER_LINKS = [
   { label: t('sidebar.resume'), href: '/resume/' },
   { label: t('sidebar.source'), href: SITE.links.repo },
@@ -55,45 +64,85 @@ const currentPath = Astro.url.pathname
 
 <aside class="layout-sidebar">
   <div class="flex items-center gap-2">
-    <a href={localeHref('/', lang)} class="block min-w-0 no-underline">
+    <a
+      href={localeHref('/', lang)}
+      class="sidebar-logo block min-w-0 no-underline"
+      style={`--logo-width:${LOGO_WIDTH}px;--logo-width-mobile:${LOGO_WIDTH_MOBILE}px`}
+    >
       {/*
         Black artwork on transparency, so it would disappear against the dark
         surface — `dark:invert` flips it to cream. width+densities emits 1x/2x
         only, keeping the 900KB source out of the build.
+
+        The rendered width comes from the custom properties above rather than
+        an inline `width:`, so the stacked layout can shrink it — an inline
+        style would beat any stylesheet rule.
       */}
       <Image
         src={logo}
         alt={LOGO_ALT}
         width={LOGO_WIDTH}
         densities={[1, 2]}
-        style={`width:${LOGO_WIDTH}px;max-width:100%`}
         class="dark:invert"
         loading="eager"
       />
     </a>
 
-    {/* The only interactive component — everything else is static HTML. */}
-    <LanguageToggle />
-    <Tooltip label={t('sidebar.theme')} srHidden class="shrink-0">
-      <ThemeToggle client:load />
-    </Tooltip>
+    <div class="sidebar-bar-actions flex shrink-0 items-center gap-1">
+      <LanguageToggle />
+      <Tooltip label={t('sidebar.theme')} srHidden class="shrink-0">
+        <ThemeToggle />
+      </Tooltip>
+
+      {/* Stacked layout only — the full social row lives at the bottom of a
+          real sidebar, which is hidden at that width. */}
+      <div class="sidebar-bar-social">
+        <SocialLinks links={BAR_SOCIAL} compact />
+      </div>
+
+      <button
+        type="button"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="site-menu"
+        aria-label={t('sidebar.openMenu')}
+        data-label-open={t('sidebar.openMenu')}
+        data-label-close={t('sidebar.closeMenu')}
+        class="sidebar-nav-toggle bar-control text-ink-muted transition-colors hover:bg-tag hover:text-ink-strong"
+      >
+        {/* Three bars that fold into an X when the menu is open. Drawn in CSS
+            so it costs nothing in the icon-font subset. */}
+        <span class="hamburger" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
   </div>
 
-  <hr class="my-5 border-edge" />
+  {/* Sidebar-only: the stacked menu is just the links, on a blank sheet. */}
+  <div class="sidebar-bio">
+    <hr class="my-5 border-edge" />
 
-  <p class="text-[1rem]">
-    <span>{t('sidebar.bioLead')}</span>
-    <a href="/me/">{t('sidebar.bioName')}</a>
-    <span>{t('sidebar.bioRest')}</span>
-  </p>
+    <p class="text-[1rem]">
+      <span>{t('sidebar.bioLead')}</span>
+      <a href="/me/">{t('sidebar.bioName')}</a>
+      <span>{t('sidebar.bioRest')}</span>
+    </p>
 
-  <hr class="my-5 border-edge" />
+    <hr class="my-5 border-edge" />
+  </div>
 
-  <SiteNav items={NAV} currentPath={currentPath} />
+  <div id="site-menu" class="sidebar-panel">
+    <SiteNav items={NAV} currentPath={currentPath} />
+  </div>
 
-  <div class="mt-auto pt-10">
+  <div class="sidebar-foot mt-auto pt-10">
     <SocialLinks links={SOCIAL} />
 
+    {/* Below the stacking breakpoint this whole block is hidden and the
+        same two links are rendered by Footer.astro instead. */}
     <ul class="mono-meta mt-4 flex flex-wrap items-center gap-x-2 text-ink-muted text-sm">
       {
         FOOTER_LINKS.map((link, i) => (
@@ -113,3 +162,25 @@ const currentPath = Astro.url.pathname
     </ul>
   </div>
 </aside>
+
+<script>
+  /**
+   * Menu button: toggles `data-nav-open` on the sidebar, which is what the
+   * stylesheet keys the panel and the bars-to-X animation off. Desktop shows
+   * the panel unconditionally, so the attribute is inert there.
+   */
+  const sidebar = document.querySelector<HTMLElement>('.layout-sidebar')
+  const toggle = sidebar?.querySelector<HTMLButtonElement>('[data-nav-toggle]')
+
+  if (sidebar && toggle) {
+    toggle.addEventListener('click', () => {
+      const open = sidebar.toggleAttribute('data-nav-open')
+      // Scoped to the stacked breakpoint by the stylesheet, so a stale class
+      // after a resize past it does nothing.
+      document.documentElement.classList.toggle('nav-open', open)
+      toggle.setAttribute('aria-expanded', String(open))
+      const label = open ? toggle.dataset.labelClose : toggle.dataset.labelOpen
+      if (label) toggle.setAttribute('aria-label', label)
+    })
+  }
+</script>
