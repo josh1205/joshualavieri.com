@@ -4,6 +4,7 @@ import SiteNav from './SiteNav.astro'
 import SocialLinks from './SocialLinks.astro'
 import ThemeToggle from './ThemeToggle.astro'
 import LanguageToggle from './LanguageToggle.astro'
+import F1Race from './F1Race.astro'
 import Tooltip from './Tooltip.astro'
 import { getLangFromUrl, useTranslations, localeHref } from '../i18n/utils'
 import { SITE } from '../config.ts'
@@ -138,7 +139,11 @@ const currentPath = Astro.url.pathname
     <SiteNav items={NAV} currentPath={currentPath} />
   </div>
 
-  <div class="sidebar-foot mt-auto pt-10">
+  {/* Takes the column's free space (`margin-top: auto` in global.css), so it
+      sits directly above the social row and the cars arrive from below it. */}
+  <F1Race />
+
+  <div class="sidebar-foot pt-6">
     <SocialLinks links={SOCIAL} />
 
     {/* Below the stacking breakpoint this whole block is hidden and the

@@ -92,6 +92,29 @@
   /* Nav links: icon box and label. Both grow in the stacked menu. */
   --nav-icon-size: 25px;
   --nav-label-size: 1rem;
+
+  /*
+   * F1 race strip. Everything else is derived, so `--f1-car-width` is the one
+   * knob to turn: the cars are 1:2 canvases, the stagger between finishing
+   * positions scales with them, and the track is tall enough to hold the
+   * leader over the flag plus four cars strung out behind it.
+   */
+  --f1-car-width: 34px;
+  --f1-car-height: calc(var(--f1-car-width) * 2);
+  --f1-gap: calc(var(--f1-car-width) * 0.47);
+  --f1-lane-gap: 0.65rem;
+  --f1-line: 9px;
+  /*
+   * Clear air above the flag. The track clips (`overflow: hidden`), so without
+   * this the winner's nose would be cut off instead of crossing the line.
+   */
+  --f1-line-top: 12px;
+  /* How far past the flag the leader's nose ends up. */
+  --f1-cross: calc(var(--f1-car-width) * 0.42);
+  --f1-track-height: calc(
+    var(--f1-line-top) + var(--f1-line) - var(--f1-cross) + 4 * var(--f1-gap) +
+      var(--f1-car-height) + 0.5rem
+  );
   --content-width: 760px;
   --layout-padding: 1.5rem;
   --content-padding-x: 1.5rem;
@@ -127,6 +150,10 @@
     --bar-icon-size: 24px;
     --nav-icon-size: 30px;
     --nav-label-size: 1.2rem;
+    /* The sheet is far wider than the sidebar column, so the grid grows. */
+    --f1-car-width: 38px;
+    --f1-lane-gap: 0.9rem;
+    --f1-line: 11px;
     /* Space between the bar row and the rule under it, in both menu states. */
     --bar-padding: 0.85rem;
   }
@@ -425,6 +452,133 @@
   }
 
   /*
+   * ---- F1 race ------------------------------------------------------------
+   * A grid of cars that races up to a chequered flag. `margin-top: auto` is
+   * what parks it at the bottom of the sidebar's free space — i.e. directly
+   * above the social row — so the cars arrive from below it. That auto margin
+   * used to live on `.sidebar-foot`; only one element in the column can claim
+   * the free space, or the two split it.
+   */
+  .f1-race {
+    position: relative;
+    margin-top: auto;
+    /*
+     * Shrink to the grid and centre, so the flag (which spans this box) is
+     * exactly as wide as the cars running at it rather than the whole column.
+     */
+    width: fit-content;
+    margin-inline: auto;
+    height: var(--f1-track-height);
+    /* Cars start below the track and must not widen the page on the way in. */
+    overflow: hidden;
+  }
+
+  /* The chequered flag the cars are running at. */
+  .f1-finish {
+    position: absolute;
+    inset-inline: 0;
+    top: var(--f1-line-top);
+    height: var(--f1-line);
+    background-image: repeating-conic-gradient(
+      var(--c-ink-strong) 0% 25%,
+      var(--c-surface) 0% 50%
+    );
+    background-size: var(--f1-line) var(--f1-line);
+    opacity: 0.75;
+  }
+
+  .f1-grid {
+    display: flex;
+    justify-content: center;
+    gap: var(--f1-lane-gap);
+    height: 100%;
+  }
+
+  .f1-slot {
+    position: relative;
+    width: var(--f1-car-width);
+    height: 100%;
+  }
+
+  /*
+   * Where this car parks. The leader (`--f1-place: 0`) crosses the flag by
+   * `--f1-cross`; every place behind sits one `--f1-gap` further back, which
+   * puts second place just short of the line.
+   */
+  .f1-car-wrap {
+    position: absolute;
+    left: 0;
+    bottom: calc(
+      var(--f1-track-height) - var(--f1-line-top) - var(--f1-line) +
+        var(--f1-cross) - var(--f1-place) * var(--f1-gap) -
+        var(--f1-car-height)
+    );
+    width: var(--f1-car-width);
+    animation: f1-race-in 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--f1-place) * 90ms);
+  }
+
+  /* Speed streak trailing out of the diffuser, gone once the car settles. */
+  .f1-car-wrap::before {
+    content: '';
+    position: absolute;
+    inset-inline: 22%;
+    top: 92%;
+    height: var(--f1-car-height);
+    border-radius: 9999px;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--c-ink-muted) 40%, transparent),
+      transparent 75%
+    );
+    animation: f1-streak 900ms ease-out both;
+    animation-delay: calc(var(--f1-place) * 90ms);
+  }
+
+  /*
+   * `height: auto` matters: the <img> still carries Astro's intrinsic height
+   * attribute, which would otherwise stretch it past the 1:2 canvas.
+   */
+  .f1-car {
+    display: block;
+    width: var(--f1-car-width);
+    height: auto;
+  }
+
+  /* Far enough below the track to clear it whatever the leader's offset. */
+  @keyframes f1-race-in {
+    from {
+      transform: translateY(
+        calc(var(--f1-track-height) + var(--f1-car-height))
+      );
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes f1-streak {
+    from {
+      opacity: 0.9;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Park the grid on the line with no run-up. */
+  @media (prefers-reduced-motion: reduce) {
+    .f1-car-wrap,
+    .f1-car-wrap::before {
+      animation: none;
+    }
+
+    .f1-car-wrap::before {
+      opacity: 0;
+    }
+  }
+
+  /*
    * Listings and the homepage fill the main column, left-aligned — the
    * reference runs ~956px here, not the 760px article measure.
    */
@@ -552,6 +706,20 @@
 
     html.nav-open {
       overflow: hidden;
+    }
+
+    /*
+     * The bar has no room for a race track. Inside the open sheet it comes
+     * back below the nav links, and because it is display:none until then,
+     * the entrance animation restarts every time the menu is opened.
+     */
+    .f1-race {
+      display: none;
+    }
+
+    .layout-sidebar[data-nav-open] .f1-race {
+      display: block;
+      margin-bottom: 1.5rem;
     }
 
     /* Its social row is in the bar and its links are in the page footer. */

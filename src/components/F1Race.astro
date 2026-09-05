@@ -1,0 +1,70 @@
+---
+import { Image } from 'astro:assets'
+import redbull from '../assets/f1-redbull-icon.png'
+import mercedes from '../assets/f1-mercedes-icon.png'
+import mclaren from '../assets/f1-mclarin-icon.png'
+import ferrari from '../assets/f1-ferrari-icon.png'
+import williams from '../assets/williams-f1-icon.png'
+
+/**
+ * Decorative grid of F1 cars that races up to a finish line when the sidebar
+ * renders. CSS-only — no `client:*`, so it costs nothing in JS.
+ *
+ * The whole thing is `aria-hidden`: it carries no information a screen-reader
+ * user would miss, and five car images would otherwise be five stops in the
+ * middle of the navigation.
+ */
+
+/**
+ * Resolution the cars are generated at, NOT the size they render. Rendering is
+ * `--f1-car-width` in global.css so the stacked menu can show them larger;
+ * this stays at the biggest size they're drawn at, plus densities.
+ *
+ * Every source is a 208x416 canvas with the bodywork scaled to a common
+ * length, so one width gives all five lanes identically-sized cars.
+ */
+const CAR_WIDTH = 40
+
+/**
+ * Lane order, left to right — deliberately NOT the finishing order, so the
+ * grid reads as a race rather than a staircase.
+ *
+ * `place` is the classification (0 = winner) and drives everything that
+ * matters: how far up the track the car parks, and how late it gets there.
+ * Red Bull first, then Mercedes, McLaren, Ferrari, Williams.
+ */
+const GRID = [
+  { team: 'Mercedes', image: mercedes, place: 1 },
+  { team: 'Red Bull', image: redbull, place: 0 },
+  { team: 'Williams', image: williams, place: 4 },
+  { team: 'McLaren', image: mclaren, place: 2 },
+  { team: 'Ferrari', image: ferrari, place: 3 },
+]
+---
+
+<div class="f1-race" aria-hidden="true">
+  <span class="f1-finish"></span>
+
+  <div class="f1-grid">
+    {
+      GRID.map((car) => (
+        <span class="f1-slot">
+          {/*
+            The wrapper is what animates — an <img> is a replaced element and
+            cannot carry the ::before used for the speed streak.
+          */}
+          <span class="f1-car-wrap" style={`--f1-place:${car.place}`}>
+            <Image
+              src={car.image}
+              alt=""
+              width={CAR_WIDTH}
+              densities={[1, 2]}
+              class="f1-car"
+              loading="eager"
+            />
+          </span>
+        </span>
+      ))
+    }
+  </div>
+</div>
