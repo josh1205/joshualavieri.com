@@ -23,6 +23,7 @@ const {
 
 const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title
 const canonical = new URL(Astro.url.pathname, Astro.site)
+const socialImage = new URL('/icon-512.png', Astro.site)
 const lang = getLangFromUrl(Astro.url)
 ---
 
@@ -53,7 +54,9 @@ const lang = getLangFromUrl(Astro.url)
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={socialImage} />
 
     <link
       rel="alternate"
